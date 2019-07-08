@@ -29,13 +29,13 @@ RecurringPaymentInfo RecurringPaymentInfo::fromJson(QJsonObject j) {
     r.memo = j["memo"].toString();
     r.currency = j["currency"].toString();
     r.schedule = (Schedule)j["schedule"].toInt();
-    r.startDate = QDateTime::fromSecsSinceEpoch(j["startdate"].toString().toLongLong());
+    r.startDate = QDateTime::fromTime_t(j["startdate"].toString().toLongLong());
 
     for (auto h : j["payments"].toArray()) {
         PaymentItem item;
 
         item.paymentNumber = h.toObject()["paymentnumber"].toInt();
-        item.date   = QDateTime::fromSecsSinceEpoch(h.toObject()["date"].toString().toLongLong());
+        item.date   = QDateTime::fromTime_t(h.toObject()["date"].toString().toLongLong());
         item.txid   = h.toObject()["txid"].toString();
         item.status = (PaymentStatus)h.toObject()["status"].toInt();
         item.err    = h.toObject()["err"].toString();
@@ -58,7 +58,7 @@ QJsonObject RecurringPaymentInfo::toJson() {
     for (auto h : payments) {
         paymentsJson.append(QJsonObject{
             {"paymentnumber", h.paymentNumber},
-            {"date",   QString::number(h.date.toSecsSinceEpoch())},
+            {"date",   QString::number(h.date.toTime_t())},
             {"txid",   h.txid},
             {"err",    h.err},
             {"status", h.status}
@@ -73,7 +73,7 @@ QJsonObject RecurringPaymentInfo::toJson() {
         {"memo", memo},
         {"currency", currency},
         {"schedule", (int)schedule},
-        {"startdate", QString::number(startDate.toSecsSinceEpoch())},
+        {"startdate", QString::number(startDate.toTime_t())},
         {"payments", paymentsJson}
     };
 
@@ -99,7 +99,7 @@ QDateTime RecurringPaymentInfo::getNextPayment() const {
             return item.date;
     }
 
-    return QDateTime::fromSecsSinceEpoch(0);
+    return QDateTime::fromTime_t(0);
 } 
 
 /**
@@ -669,7 +669,7 @@ QVariant RecurringListViewModel::data(const QModelIndex &index, int role) const 
         case 2: return QString::number(rpi.getNumPendingPayments()) + " of " + QString::number(rpi.payments.size());
         case 3: { 
             auto n = rpi.getNextPayment();
-            if (n.toSecsSinceEpoch() == 0) return tr("None"); else return n;
+            if (n.toTime_t() == 0) return tr("None"); else return n;
         }
         case 4: return rpi.toAddr;        
         }

@@ -230,11 +230,11 @@ AppConnectionType AppDataServer::getLastConnectionType() {
 }
 
 void AppDataServer::saveLastSeenTime() {
-    QSettings().setValue("mobileapp/lastseentime", QDateTime::currentSecsSinceEpoch());
+    QSettings().setValue("mobileapp/lastseentime", QDateTime::currentDateTime().toTime_t());
 }
 
 QDateTime  AppDataServer::getLastSeenTime() {
-    return QDateTime::fromSecsSinceEpoch(QSettings().value("mobileapp/lastseentime", 0).toLongLong());
+    return QDateTime::fromTime_t(QSettings().value("mobileapp/lastseentime", 0).toLongLong());
 }
 
 void AppDataServer::setConnectedName(QString name) {
@@ -779,7 +779,7 @@ void AppDataServer::processGetTransactions(MainWindow* mainWindow, std::shared_p
     for (auto opid : wtxns.keys()) {
         txns.append(QJsonObject{
             {"type", "send"},
-            {"datetime", QDateTime::currentSecsSinceEpoch()},
+            {"datetime", (qint64)QDateTime::currentDateTime().toTime_t()},
             {"amount", Settings::getDecimalString(wtxns[opid].tx.toAddrs[0].amount)},
             {"txid", ""},
             {"address", wtxns[opid].tx.toAddrs[0].addr},

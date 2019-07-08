@@ -59,7 +59,7 @@ public:
         // Initialize the payments list.
         for (auto i = 0; i < numPayments; i++) {
             payments.append(
-                PaymentItem{i, QDateTime::fromSecsSinceEpoch(0), 
+                PaymentItem{i, QDateTime::fromTime_t(0), 
                 "", "", PaymentStatus::NOT_STARTED});
         }
     }
